@@ -7,9 +7,13 @@ public class Ball : MonoBehaviour
     Rigidbody2D rb;
     public float speed;
     Vector2 force_direction;
+    Vector3 firstposition;
+    TrailRenderer tr;
     private void Awake()
     {
+        tr = gameObject.GetComponent<TrailRenderer>();
         rb = this.gameObject.GetComponent<Rigidbody2D>();
+        firstposition = this.gameObject.GetComponent<Transform>().position;
     }
     void Start()
     {
@@ -28,6 +32,7 @@ public class Ball : MonoBehaviour
         force_direction.y = -1;
         rb.AddForce(force_direction.normalized * speed);
     }
+  
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "LeftWall")
@@ -41,5 +46,19 @@ public class Ball : MonoBehaviour
             Vector2 force = new Vector2(-rb.velocity.x, rb.velocity.y);
             rb.AddForce(force*15);
         }
+        if (collision.gameObject.tag=="downWall")
+        {
+            tr.emitting = false;
+            transform.position = firstposition;
+            rb.velocity = Vector2.zero;
+            Invoke(nameof(ballfirstmovement), 1f);
+            tr.time = 2;
+            Invoke(nameof(emmitingtrue), 0.5f);
+        }
+
+    }
+    public void emmitingtrue()
+    {
+        tr.emitting = true;
     }
 }
